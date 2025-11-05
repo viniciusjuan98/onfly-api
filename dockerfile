@@ -18,13 +18,18 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copiar e configurar script de entrada primeiro
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Copiar os arquivos do projeto
 COPY . .
 
-# Instalar dependências do Laravel
-RUN composer install --no-scripts --no-interaction --optimize-autoloader
+# Instalar dependências do Laravel (será sobrescrito pelo volume, mas útil para build)
+RUN composer install --no-scripts --no-interaction --optimize-autoloader || true
 
 # Ajustar permissões do storage e bootstrap
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]
