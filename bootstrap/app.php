@@ -5,9 +5,11 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException as IlluminateAuthenticationException;
 use App\Exceptions\AuthenticationException;
+use App\Exceptions\TravelOrderException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException as JWTTokenExpiredException;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -62,6 +64,23 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 $exception = AuthenticationException::unauthorized();
                 return response()->json($exception->toJsonResponse(), $exception->statusCode);
+            }
+        });
+
+        $exceptions->render(function (TravelOrderException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json($e->toJsonResponse(), $e->statusCode);
+            }
+        });
+
+        $exceptions->render(function (AccessDeniedHttpException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'erro' => true,
+                    'mensagem' => 'Acesso negado. Privilégios de administrador são necessários.',
+                    'codigo' => 'ACESSO_NEGADO',
+                    'status' => 403
+                ], 403);
             }
         });
     })->create();

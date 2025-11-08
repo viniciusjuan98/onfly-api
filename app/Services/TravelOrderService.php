@@ -4,13 +4,19 @@ namespace App\Services;
 
 use App\Data\TravelOrder\CreateTravelOrderDTO;
 use App\Data\TravelOrder\UpdateTravelOrderStatusDTO;
+use App\Exceptions\TravelOrderException;
 use App\Models\TravelOrder;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class TravelOrderService
 {
     public function create(CreateTravelOrderDTO $dto, int $userId): TravelOrder
     {
+        // Validate dates
+        if ($dto->returnDate < $dto->departureDate) {
+            throw TravelOrderException::invalidDates();
+        }
+
         return TravelOrder::create([
             'user_id' => $userId,
             'requester_name' => $dto->requesterName,
@@ -21,14 +27,20 @@ class TravelOrderService
         ]);
     }
 
-    public function findById(int $id): ?TravelOrder
+    public function findById(int $id): TravelOrder
     {
-        return TravelOrder::with('user')->find($id);
+        $travelOrder = TravelOrder::find($id);
+
+        if (!$travelOrder) {
+            throw TravelOrderException::notFound();
+        }
+
+        return $travelOrder;
     }
 
-    public function findAll(array $filters = [], int $perPage = 15): LengthAwarePaginator
+    public function findAll(array $filters = []): Collection
     {
-        $query = TravelOrder::with('user');
+        $query = TravelOrder::query();
 
         if (isset($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -46,15 +58,35 @@ class TravelOrderService
             $query->whereDate('return_date', $filters['return_date']);
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate($perPage);
+        if (isset($filters['departure_date_from'])) {
+            $query->whereDate('departure_date', '>=', $filters['departure_date_from']);
+        }
+
+        if (isset($filters['departure_date_to'])) {
+            $query->whereDate('departure_date', '<=', $filters['departure_date_to']);
+        }
+
+        if (isset($filters['return_date_from'])) {
+            $query->whereDate('return_date', '>=', $filters['return_date_from']);
+        }
+
+        if (isset($filters['return_date_to'])) {
+            $query->whereDate('return_date', '<=', $filters['return_date_to']);
+        }
+
+        return $query->orderBy('created_at', 'desc')->get();
     }
 
-    public function updateStatus(int $id, UpdateTravelOrderStatusDTO $dto): ?TravelOrder
+    public function updateStatus(int $id, UpdateTravelOrderStatusDTO $dto): TravelOrder
     {
         $travelOrder = TravelOrder::find($id);
 
         if (!$travelOrder) {
-            return null;
+            throw TravelOrderException::notFound();
+        }
+
+        if (in_array($travelOrder->status, ['aprovado', 'cancelado'])) {
+            throw TravelOrderException::invalidStatus($travelOrder->status);
         }
 
         $travelOrder->update(['status' => $dto->status]);
@@ -62,4 +94,3 @@ class TravelOrderService
         return $travelOrder->fresh();
     }
 }
-

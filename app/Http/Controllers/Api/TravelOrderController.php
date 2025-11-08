@@ -52,7 +52,6 @@ class TravelOrderController extends Controller
         $travelOrder = $this->travelOrderService->create($dto, auth()->id());
 
         return response()->json([
-            'message' => 'Travel order created successfully',
             'data' => $travelOrder,
         ], 201);
     }
@@ -90,10 +89,6 @@ class TravelOrderController extends Controller
     {
         $travelOrder = $this->travelOrderService->findById($id);
 
-        if (!$travelOrder) {
-            return response()->json(['message' => 'Travel order not found'], 404);
-        }
-
         return response()->json(['data' => $travelOrder]);
     }
 
@@ -116,24 +111,44 @@ class TravelOrderController extends Controller
      *     @OA\Parameter(
      *         name="departure_date",
      *         in="query",
+     *         description="Exact departure date (format: YYYY-MM-DD)",
      *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
      *         name="return_date",
      *         in="query",
+     *         description="Exact return date (format: YYYY-MM-DD)",
      *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Parameter(
-     *         name="per_page",
+     *         name="departure_date_from",
      *         in="query",
-     *         @OA\Schema(type="integer", default=15)
+     *         description="Departure date range start (format: YYYY-MM-DD)",
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="departure_date_to",
+     *         in="query",
+     *         description="Departure date range end (format: YYYY-MM-DD)",
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="return_date_from",
+     *         in="query",
+     *         description="Return date range start (format: YYYY-MM-DD)",
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="return_date_to",
+     *         in="query",
+     *         description="Return date range end (format: YYYY-MM-DD)",
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of travel orders",
      *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/TravelOrder")),
-     *             @OA\Property(property="meta", type="object")
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/TravelOrder"))
      *         )
      *     ),
      *     @OA\Response(
@@ -144,12 +159,20 @@ class TravelOrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['status', 'destination', 'departure_date', 'return_date']);
-        $perPage = $request->input('per_page', 15);
+        $filters = $request->only([
+            'status',
+            'destination',
+            'departure_date',
+            'return_date',
+            'departure_date_from',
+            'departure_date_to',
+            'return_date_from',
+            'return_date_to'
+        ]);
 
-        $travelOrders = $this->travelOrderService->findAll($filters, $perPage);
+        $travelOrders = $this->travelOrderService->findAll($filters);
 
-        return response()->json($travelOrders);
+        return response()->json(['data' => $travelOrders]);
     }
 
     /**
@@ -172,7 +195,6 @@ class TravelOrderController extends Controller
      *         response=200,
      *         description="Status updated successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Status updated successfully"),
      *             @OA\Property(property="data", ref="#/components/schemas/TravelOrder")
      *         )
      *     ),
@@ -195,14 +217,8 @@ class TravelOrderController extends Controller
         $dto = new UpdateTravelOrderStatusDTO($request->validated());
         $travelOrder = $this->travelOrderService->updateStatus($id, $dto);
 
-        if (!$travelOrder) {
-            return response()->json(['message' => 'Travel order not found'], 404);
-        }
-
         return response()->json([
-            'message' => 'Status updated successfully',
             'data' => $travelOrder,
         ]);
     }
 }
-

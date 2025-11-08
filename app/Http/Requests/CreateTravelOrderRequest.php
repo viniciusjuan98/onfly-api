@@ -30,5 +30,36 @@ class CreateTravelOrderRequest extends FormRequest
             'return_date' => 'required|date|after:departure_date',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'requester_name.required' => 'O nome do solicitante é obrigatório.',
+            'requester_name.string' => 'O nome do solicitante deve ser uma string.',
+            'requester_name.max' => 'O nome do solicitante não pode ter mais de 255 caracteres.',
+
+            'destination.required' => 'O destino é obrigatório.',
+            'destination.string' => 'O destino deve ser uma string.',
+            'destination.max' => 'O destino não pode ter mais de 255 caracteres.',
+
+            'departure_date.required' => 'A data de partida é obrigatória.',
+            'departure_date.date' => 'A data de partida deve ser uma data válida.',
+            'departure_date.after_or_equal' => 'A data de partida deve ser hoje ou uma data futura.',
+
+            'return_date.required' => 'A data de retorno é obrigatória.',
+            'return_date.date' => 'A data de retorno deve ser uma data válida.',
+            'return_date.after' => 'A data de retorno deve ser posterior à data de partida.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'requester_name' => 'nome do solicitante',
+            'destination' => 'destino',
+            'departure_date' => 'data de partida',
+            'return_date' => 'data de retorno',
+        ];
+    }
 }
 
