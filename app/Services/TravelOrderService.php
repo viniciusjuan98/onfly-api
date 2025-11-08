@@ -27,9 +27,15 @@ class TravelOrderService
         ]);
     }
 
-    public function findById(int $id): TravelOrder
+    public function findById(int $id, ?int $userId = null): TravelOrder
     {
-        $travelOrder = TravelOrder::find($id);
+        $query = TravelOrder::query();
+
+        if ($userId !== null) {
+            $query->where('user_id', $userId);
+        }
+
+        $travelOrder = $query->find($id);
 
         if (!$travelOrder) {
             throw TravelOrderException::notFound();
@@ -38,9 +44,14 @@ class TravelOrderService
         return $travelOrder;
     }
 
-    public function findAll(array $filters = []): Collection
+    public function findAll(array $filters = [], ?int $userId = null): Collection
     {
         $query = TravelOrder::query();
+
+        // Filter by user_id if provided (non-admin users)
+        if ($userId !== null) {
+            $query->where('user_id', $userId);
+        }
 
         if (isset($filters['status'])) {
             $query->where('status', $filters['status']);

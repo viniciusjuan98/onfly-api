@@ -87,7 +87,10 @@ class TravelOrderController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $travelOrder = $this->travelOrderService->findById($id);
+        $user = auth()->user();
+        $userId = $user->is_admin ? null : $user->id;
+        
+        $travelOrder = $this->travelOrderService->findById($id, $userId);
 
         return response()->json(['data' => $travelOrder]);
     }
@@ -170,7 +173,10 @@ class TravelOrderController extends Controller
             'return_date_to'
         ]);
 
-        $travelOrders = $this->travelOrderService->findAll($filters);
+        $user = auth()->user();
+        $userId = $user->is_admin ? null : $user->id;
+        
+        $travelOrders = $this->travelOrderService->findAll($filters, $userId);
 
         return response()->json(['data' => $travelOrders]);
     }
