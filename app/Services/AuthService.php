@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Data\User\RegisterDTO;
+use App\Exceptions\AuthenticationException;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,12 +28,12 @@ class AuthService
         ]);
     }
 
-    public function login(string $email, string $password): ?string
+    public function login(string $email, string $password): string
     {
         $credentials = ['email' => $email, 'password' => $password];
 
         if (!$token = auth('api')->attempt($credentials)) {
-            return null;
+            throw AuthenticationException::invalidCredentials();
         }
 
         return $token;

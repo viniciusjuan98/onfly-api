@@ -75,10 +75,6 @@ class AuthController extends Controller
 
         $token = $this->authService->login($request->email, $request->password);
 
-        if (!$token) {
-            return response()->json(['error' => 'Credenciais inválidas'], 401);
-        }
-
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
@@ -119,10 +115,6 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         $user = $this->authService->me();
-
-        if (!$user) {
-            return response()->json(['error' => 'Usuário não autenticado'], 401);
-        }
 
         return response()->json(['user' => $user]);
     }
