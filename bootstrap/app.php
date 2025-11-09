@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException as IlluminateAuthenticationException;
 use App\Exceptions\AuthenticationException;
 use App\Exceptions\TravelOrderException;
+use App\Exceptions\UserException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException as JWTTokenExpiredException;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -68,6 +69,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (TravelOrderException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json($e->toJsonResponse(), $e->statusCode);
+            }
+        });
+
+        $exceptions->render(function (UserException $e, $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json($e->toJsonResponse(), $e->statusCode);
             }
