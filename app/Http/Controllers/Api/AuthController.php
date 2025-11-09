@@ -18,7 +18,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/auth/register",
+     *     path="/api/register",
      *     summary="Register a new user",
      *     tags={"Auth"},
      *     @OA\RequestBody(
@@ -28,7 +28,9 @@ class AuthController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="User registered successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", ref="#/components/schemas/User")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=422,
@@ -47,7 +49,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/auth/login",
+     *     path="/api/login",
      *     summary="Login a user",
      *     tags={"Auth"},
      *     @OA\RequestBody(
@@ -84,13 +86,19 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/auth/logout",
+     *     path="/api/logout",
      *     summary="Logout a user",
      *     tags={"Auth"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Logout successful",
      *         @OA\JsonContent(ref="#/components/schemas/LogoutResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
@@ -102,13 +110,21 @@ class AuthController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/auth/me",
+     *     path="/api/me",
      *     summary="Get the authenticated user",
      *     tags={"Auth"},
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="User information",
-     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */

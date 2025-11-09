@@ -1,59 +1,304 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Onfly Travel API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API para gerenciamento de pedidos de viagem (Travel Orders) e notificações, desenvolvida com Laravel 12 e autenticação JWT.
 
-## About Laravel
+## 🚀 Tecnologias
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Laravel 12
+- MySQL 8.0
+- JWT Authentication (tymon/jwt-auth)
+- Docker & Docker Compose
+- Swagger/OpenAPI para documentação
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Pré-requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Docker
+- Docker Compose
 
-## Learning Laravel
+## 🔧 Instalação e Configuração
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Clone o repositório
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone <repository-url>
+cd onfly-api
+```
 
-## Laravel Sponsors
+### 2. Suba os containers Docker
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+docker-compose up -d
+```
 
-### Premium Partners
+### 3. Instale as dependências dentro do container
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+docker exec onfly_app composer install
+```
 
-## Contributing
+### 4. Configure o arquivo .env
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+docker exec onfly_app php artisan key:generate
+docker exec onfly_app php artisan jwt:secret
+```
 
-## Code of Conduct
+### 5. Execute as migrations
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+docker exec onfly_app php artisan migrate
+```
 
-## Security Vulnerabilities
+### 6. (Opcional) Execute os seeders
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+docker exec onfly_app php artisan db:seed
+```
 
-## License
+## 📚 Documentação da API (Swagger)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+A documentação completa da API está disponível através do Swagger UI.
+
+### Acessar a Documentação
+
+Após subir os containers, acesse:
+
+```
+http://localhost:8000/api/documentation
+```
+
+A documentação Swagger inclui:
+
+- ✅ Todas as rotas disponíveis
+- ✅ Parâmetros de requisição
+- ✅ Exemplos de request/response
+- ✅ Autenticação JWT (Bearer Token)
+- ✅ Schemas de dados
+- ✅ Códigos de status HTTP
+
+### Regenerar a Documentação
+
+Se você fizer alterações nos controladores e quiser atualizar a documentação:
+
+```bash
+docker exec onfly_app php artisan l5-swagger:generate
+```
+
+## 🔐 Autenticação
+
+A API utiliza JWT (JSON Web Tokens) para autenticação.
+
+### Como Usar
+
+1. **Registrar um usuário:**
+   - POST `/api/register`
+
+2. **Fazer login:**
+   - POST `/api/login`
+   - Receberá um `access_token` na resposta
+
+3. **Usar o token:**
+   - Adicione o header em todas as requisições autenticadas:
+   ```
+   Authorization: Bearer {seu_token_aqui}
+   ```
+
+4. **Testar no Swagger:**
+   - Clique no botão "Authorize" 🔒 no topo da página do Swagger
+   - Digite: `Bearer {seu_token_aqui}`
+   - Clique em "Authorize"
+   - Agora você pode testar todas as rotas protegidas
+
+## 📡 Endpoints Principais
+
+### Health Check
+- `GET /api/ping` - Verifica se a API está funcionando
+
+### Autenticação
+- `POST /api/register` - Registrar novo usuário
+- `POST /api/login` - Fazer login
+- `POST /api/logout` - Fazer logout (requer autenticação)
+- `GET /api/me` - Obter dados do usuário autenticado
+
+### Pedidos de Viagem (Travel Orders)
+- `POST /api/orders` - Criar novo pedido
+- `GET /api/orders` - Listar pedidos (com filtros)
+- `GET /api/orders/{id}` - Obter pedido específico
+- `PATCH /api/orders/{id}/status` - Atualizar status (somente admin)
+
+### Notificações
+- `GET /api/me/notificacoes` - Listar notificações
+- `PATCH /api/me/notificacoes/{id}/read` - Marcar como lida
+
+## 🧪 Testes
+
+Execute os testes dentro do container:
+
+```bash
+docker exec onfly_app php artisan test
+```
+
+## 🐳 Comandos Docker Úteis
+
+### Ver logs do container
+```bash
+docker logs onfly_app -f
+```
+
+### Acessar o bash do container
+```bash
+docker exec -it onfly_app bash
+```
+
+### Parar os containers
+```bash
+docker-compose down
+```
+
+### Reconstruir os containers
+```bash
+docker-compose up -d --build
+```
+
+## 🔍 Filtros Disponíveis
+
+### Listagem de Pedidos de Viagem
+
+A rota `GET /api/orders` aceita os seguintes filtros via query params:
+
+- `status` - Filtrar por status (solicitado, aprovado, cancelado)
+- `destination` - Filtrar por destino
+- `departure_date` - Data exata de partida (YYYY-MM-DD)
+- `return_date` - Data exata de retorno (YYYY-MM-DD)
+- `departure_date_from` - Data de partida início do range
+- `departure_date_to` - Data de partida fim do range
+- `return_date_from` - Data de retorno início do range
+- `return_date_to` - Data de retorno fim do range
+
+**Exemplo:**
+```
+GET /api/orders?status=aprovado&destination=São Paulo&departure_date_from=2025-12-01
+```
+
+## 👥 Perfis de Usuário
+
+### Usuário Normal
+- Pode criar pedidos de viagem
+- Pode visualizar apenas seus próprios pedidos
+- Recebe notificações sobre mudanças de status
+
+### Administrador
+- Pode visualizar todos os pedidos
+- Pode alterar status dos pedidos
+- Usuários normais recebem notificações quando admin altera status
+
+### Criar um Administrador
+
+Para criar um usuário administrador, registre-se normalmente e depois atualize no banco de dados ou registre com o campo `is_admin: true`:
+
+```json
+{
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "is_admin": true
+}
+```
+
+## 📝 Status dos Pedidos
+
+Os pedidos de viagem podem ter os seguintes status:
+
+- `solicitado` - Pedido criado, aguardando aprovação
+- `aprovado` - Pedido aprovado pelo administrador
+- `cancelado` - Pedido cancelado
+
+**Regra:** Pedidos com status `aprovado` não podem ser alterados novamente.
+
+## 🌐 URLs
+
+- **API Base:** http://localhost:8000/api
+- **Documentação Swagger:** http://localhost:8000/api/documentation
+- **Banco de Dados:** localhost:3323
+
+## 🗄️ Banco de Dados
+
+### Credenciais MySQL
+
+- **Host:** localhost
+- **Port:** 3323
+- **Database:** onfly
+- **Username:** onfly
+- **Password:** onfly
+- **Root Password:** root
+
+## 📂 Estrutura do Projeto
+
+```
+app/
+├── Http/
+│   ├── Controllers/Api/     # Controladores da API
+│   ├── Middleware/           # Middlewares customizados
+│   └── Requests/             # Form Requests com validações
+├── Models/                   # Models Eloquent
+├── Services/                 # Camada de serviço (lógica de negócio)
+├── Data/                     # DTOs (Data Transfer Objects)
+└── Exceptions/               # Exceções customizadas
+
+routes/
+└── api.php                   # Definição das rotas da API
+
+database/
+├── migrations/               # Migrations do banco
+└── factories/                # Factories para testes
+
+tests/
+├── Unit/                     # Testes unitários
+└── Feature/                  # Testes de integração
+
+storage/
+└── api-docs/                 # Documentação Swagger gerada
+    └── api-docs.json
+```
+
+## 🛠️ Comandos Artisan Úteis
+
+```bash
+# Limpar cache
+docker exec onfly_app php artisan cache:clear
+
+# Limpar config
+docker exec onfly_app php artisan config:clear
+
+# Rodar migrations
+docker exec onfly_app php artisan migrate
+
+# Rollback migrations
+docker exec onfly_app php artisan migrate:rollback
+
+# Criar nova migration
+docker exec onfly_app php artisan make:migration nome_da_migration
+
+# Criar novo controller
+docker exec onfly_app php artisan make:controller NomeController
+
+# Gerar documentação Swagger
+docker exec onfly_app php artisan l5-swagger:generate
+```
+
+## 📖 Documentação Adicional
+
+- [Laravel Documentation](https://laravel.com/docs)
+- [JWT Auth Documentation](https://jwt-auth.readthedocs.io/)
+- [Swagger/OpenAPI Specification](https://swagger.io/specification/)
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+
+---
+
+Desenvolvido com ❤️ para Onfly

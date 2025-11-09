@@ -10,10 +10,12 @@ use Illuminate\Validation\ValidationException;
 /**
  * @OA\Schema(
  *     schema="RegisterRequest",
- *     required={"name", "email", "password"},
- *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="email", type="string"),
- *     @OA\Property(property="password", type="string"),
+ *     required={"name", "email", "password", "password_confirmation"},
+ *     @OA\Property(property="name", type="string", example="John Doe"),
+ *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+ *     @OA\Property(property="password", type="string", format="password", minLength=8, example="password123"),
+ *     @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
+ *     @OA\Property(property="is_admin", type="boolean", example=false, description="Optional: Set user as admin")
  * )
  */
 class RegisterRequest extends FormRequest
