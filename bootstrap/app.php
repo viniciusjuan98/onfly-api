@@ -7,10 +7,12 @@ use Illuminate\Auth\AuthenticationException as IlluminateAuthenticationException
 use App\Exceptions\AuthenticationException;
 use App\Exceptions\TravelOrderException;
 use App\Exceptions\UserException;
+use App\Exceptions\NotificationException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException as JWTTokenExpiredException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -88,6 +90,30 @@ return Application::configure(basePath: dirname(__DIR__))
                     'codigo' => 'ACESSO_NEGADO',
                     'status' => 403
                 ], 403);
+            }
+        });
+
+        $exceptions->render(function (NotificationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json($e->toJsonResponse(), $e->statusCode);
+            }
+        });
+
+        $exceptions->render(function (Throwable $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $statusCode = $e instanceof HttpException ? $e->getStatusCode() : 500;
+
+                $detailedMessage = config('app.debug')
+                    ? $e->getMessage() . ' em ' . $e->getFile() . ':' . $e->getLine()
+                    : $e->getMessage();
+
+                return response()->json([
+                    'erro' => true,
+                    'mensagem' => 'Erro ao processar a requisição: ' . $detailedMessage,
+                    'codigo' => 'ERRO_INTERNO',
+                    'status' => $statusCode,
+                    'tipo_erro' => get_class($e),
+                ], $statusCode);
             }
         });
     })->create();

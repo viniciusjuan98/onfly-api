@@ -224,6 +224,7 @@ class TravelOrderController extends Controller
         $travelOrder = $this->travelOrderService->updateStatus($id, $dto);
 
         return response()->json([
+            'mensagem' => 'Status da ordem de viagem atualizado com sucesso.',
             'data' => $travelOrder,
         ]);
     }

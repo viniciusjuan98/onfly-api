@@ -6,6 +6,7 @@ use App\Data\TravelOrder\CreateTravelOrderDTO;
 use App\Data\TravelOrder\UpdateTravelOrderStatusDTO;
 use App\Exceptions\TravelOrderException;
 use App\Models\TravelOrder;
+use App\Notifications\TravelOrderStatusChanged;
 use Illuminate\Database\Eloquent\Collection;
 
 class TravelOrderService
@@ -100,7 +101,21 @@ class TravelOrderService
             throw TravelOrderException::invalidStatus($travelOrder->status);
         }
 
+        $oldStatus = $travelOrder->status;
+
         $travelOrder->update(['status' => $dto->status]);
+
+        if (in_array($dto->status, ['aprovado', 'cancelado'])) {
+            $user = $travelOrder->user;
+            if ($user) {
+                $user->notify(new TravelOrderStatusChanged(
+                    $travelOrder->id,
+                    $travelOrder->destination,
+                    $oldStatus,
+                    $dto->status
+                ));
+            }
+        }
 
         return $travelOrder->fresh();
     }
