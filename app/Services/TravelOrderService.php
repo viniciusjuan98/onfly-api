@@ -49,7 +49,6 @@ class TravelOrderService
     {
         $query = TravelOrder::query();
 
-        // Filter by user_id if provided (non-admin users)
         if ($userId !== null) {
             $query->where('user_id', $userId);
         }
