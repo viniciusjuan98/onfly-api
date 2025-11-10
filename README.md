@@ -51,12 +51,6 @@ docker exec onfly_app php artisan jwt:secret
 docker exec onfly_app php artisan migrate
 ```
 
-### 6. (Opcional) Execute os seeders
-
-```bash
-docker exec onfly_app php artisan db:seed
-```
-
 ## 📚 Documentação da API (Swagger)
 
 A documentação completa da API está disponível através do Swagger UI.
