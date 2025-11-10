@@ -364,6 +364,7 @@
                     {
                         "name": "status",
                         "in": "query",
+                        "description": "Filter by order status",
                         "schema": {
                             "type": "string",
                             "enum": [
@@ -377,8 +378,10 @@
                     {
                         "name": "destination",
                         "in": "query",
+                        "description": "Filter by destination (partial match)",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "São Paulo"
                         }
                     },
                     {
@@ -387,7 +390,8 @@
                         "description": "Exact departure date (format: YYYY-MM-DD)",
                         "schema": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "example": "2025-12-01"
                         }
                     },
                     {
@@ -396,7 +400,8 @@
                         "description": "Exact return date (format: YYYY-MM-DD)",
                         "schema": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "example": "2025-12-10"
                         }
                     },
                     {
@@ -405,7 +410,8 @@
                         "description": "Departure date range start (format: YYYY-MM-DD)",
                         "schema": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "example": "2025-12-01"
                         }
                     },
                     {
@@ -414,7 +420,8 @@
                         "description": "Departure date range end (format: YYYY-MM-DD)",
                         "schema": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "example": "2025-12-31"
                         }
                     },
                     {
@@ -423,7 +430,8 @@
                         "description": "Return date range start (format: YYYY-MM-DD)",
                         "schema": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "example": "2025-12-10"
                         }
                     },
                     {
@@ -432,7 +440,28 @@
                         "description": "Return date range end (format: YYYY-MM-DD)",
                         "schema": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "example": "2025-12-31"
+                        }
+                    },
+                    {
+                        "name": "created_at_from",
+                        "in": "query",
+                        "description": "Filter orders created from this date (format: YYYY-MM-DD)",
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-11-01"
+                        }
+                    },
+                    {
+                        "name": "created_at_to",
+                        "in": "query",
+                        "description": "Filter orders created until this date (format: YYYY-MM-DD)",
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2025-11-30"
                         }
                     }
                 ],

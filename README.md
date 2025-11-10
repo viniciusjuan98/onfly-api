@@ -1,6 +1,6 @@
 # Onfly Travel API
 
-API para gerenciamento de pedidos de viagem (Travel Orders) e notificações, desenvolvida com Laravel 12 e autenticação JWT.
+API para gerenciamento de pedidos de viagem e notificações, desenvolvida com Laravel 12 e autenticação JWT.
 
 ## 🚀 Tecnologias
 
@@ -78,14 +78,6 @@ A documentação Swagger inclui:
 - ✅ Schemas de dados
 - ✅ Códigos de status HTTP
 
-### Regenerar a Documentação
-
-Se você fizer alterações nos controladores e quiser atualizar a documentação:
-
-```bash
-docker exec onfly_app php artisan l5-swagger:generate
-```
-
 ## 🔐 Autenticação
 
 A API utiliza JWT (JSON Web Tokens) para autenticação.
@@ -104,12 +96,6 @@ A API utiliza JWT (JSON Web Tokens) para autenticação.
    ```
    Authorization: Bearer {seu_token_aqui}
    ```
-
-4. **Testar no Swagger:**
-   - Clique no botão "Authorize" 🔒 no topo da página do Swagger
-   - Digite: `Bearer {seu_token_aqui}`
-   - Clique em "Authorize"
-   - Agora você pode testar todas as rotas protegidas
 
 ## 📡 Endpoints Principais
 
@@ -216,13 +202,8 @@ Os pedidos de viagem podem ter os seguintes status:
 - `aprovado` - Pedido aprovado pelo administrador
 - `cancelado` - Pedido cancelado
 
-**Regra:** Pedidos com status `aprovado` não podem ser alterados novamente.
-
 ## 🌐 URLs
-
-- **API Base:** http://localhost:8000/api
 - **Documentação Swagger:** http://localhost:8000/api/documentation
-- **Banco de Dados:** localhost:3323
 
 ## 🗄️ Banco de Dados
 
@@ -264,41 +245,9 @@ storage/
     └── api-docs.json
 ```
 
-## 🛠️ Comandos Artisan Úteis
-
-```bash
-# Limpar cache
-docker exec onfly_app php artisan cache:clear
-
-# Limpar config
-docker exec onfly_app php artisan config:clear
-
-# Rodar migrations
-docker exec onfly_app php artisan migrate
-
-# Rollback migrations
-docker exec onfly_app php artisan migrate:rollback
-
-# Criar nova migration
-docker exec onfly_app php artisan make:migration nome_da_migration
-
-# Criar novo controller
-docker exec onfly_app php artisan make:controller NomeController
-
-# Gerar documentação Swagger
-docker exec onfly_app php artisan l5-swagger:generate
-```
-
 ## 📖 Documentação Adicional
 
 - [Laravel Documentation](https://laravel.com/docs)
 - [JWT Auth Documentation](https://jwt-auth.readthedocs.io/)
 - [Swagger/OpenAPI Specification](https://swagger.io/specification/)
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
----
-
-Desenvolvido com ❤️ para Onfly

@@ -85,6 +85,14 @@ class TravelOrderService
             $query->whereDate('return_date', '<=', $filters['return_date_to']);
         }
 
+        if (isset($filters['created_at_from'])) {
+            $query->whereDate('created_at', '>=', $filters['created_at_from']);
+        }
+
+        if (isset($filters['created_at_to'])) {
+            $query->whereDate('created_at', '<=', $filters['created_at_to']);
+        }
+
         return $query->orderBy('created_at', 'desc')->get();
     }
 

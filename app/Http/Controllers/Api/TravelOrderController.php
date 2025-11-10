@@ -89,7 +89,7 @@ class TravelOrderController extends Controller
     {
         $user = auth()->user();
         $userId = $user->is_admin ? null : $user->id;
-        
+
         $travelOrder = $this->travelOrderService->findById($id, $userId);
 
         return response()->json(['data' => $travelOrder]);
@@ -104,48 +104,62 @@ class TravelOrderController extends Controller
      *     @OA\Parameter(
      *         name="status",
      *         in="query",
+     *         description="Filter by order status",
      *         @OA\Schema(type="string", enum={"solicitado", "aprovado", "cancelado"}, example="solicitado")
      *     ),
      *     @OA\Parameter(
      *         name="destination",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         description="Filter by destination (partial match)",
+     *         @OA\Schema(type="string", example="São Paulo")
      *     ),
      *     @OA\Parameter(
      *         name="departure_date",
      *         in="query",
      *         description="Exact departure date (format: YYYY-MM-DD)",
-     *         @OA\Schema(type="string", format="date")
+     *         @OA\Schema(type="string", format="date", example="2025-12-01")
      *     ),
      *     @OA\Parameter(
      *         name="return_date",
      *         in="query",
      *         description="Exact return date (format: YYYY-MM-DD)",
-     *         @OA\Schema(type="string", format="date")
+     *         @OA\Schema(type="string", format="date", example="2025-12-10")
      *     ),
      *     @OA\Parameter(
      *         name="departure_date_from",
      *         in="query",
      *         description="Departure date range start (format: YYYY-MM-DD)",
-     *         @OA\Schema(type="string", format="date")
+     *         @OA\Schema(type="string", format="date", example="2025-12-01")
      *     ),
      *     @OA\Parameter(
      *         name="departure_date_to",
      *         in="query",
      *         description="Departure date range end (format: YYYY-MM-DD)",
-     *         @OA\Schema(type="string", format="date")
+     *         @OA\Schema(type="string", format="date", example="2025-12-31")
      *     ),
      *     @OA\Parameter(
      *         name="return_date_from",
      *         in="query",
      *         description="Return date range start (format: YYYY-MM-DD)",
-     *         @OA\Schema(type="string", format="date")
+     *         @OA\Schema(type="string", format="date", example="2025-12-10")
      *     ),
      *     @OA\Parameter(
      *         name="return_date_to",
      *         in="query",
      *         description="Return date range end (format: YYYY-MM-DD)",
-     *         @OA\Schema(type="string", format="date")
+     *         @OA\Schema(type="string", format="date", example="2025-12-31")
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_at_from",
+     *         in="query",
+     *         description="Filter orders created from this date (format: YYYY-MM-DD)",
+     *         @OA\Schema(type="string", format="date", example="2025-11-01")
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_at_to",
+     *         in="query",
+     *         description="Filter orders created until this date (format: YYYY-MM-DD)",
+     *         @OA\Schema(type="string", format="date", example="2025-11-30")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -170,12 +184,14 @@ class TravelOrderController extends Controller
             'departure_date_from',
             'departure_date_to',
             'return_date_from',
-            'return_date_to'
+            'return_date_to',
+            'created_at_from',
+            'created_at_to'
         ]);
 
         $user = auth()->user();
         $userId = $user->is_admin ? null : $user->id;
-        
+
         $travelOrders = $this->travelOrderService->findAll($filters, $userId);
 
         return response()->json(['data' => $travelOrders]);
@@ -229,3 +245,4 @@ class TravelOrderController extends Controller
         ]);
     }
 }
+
